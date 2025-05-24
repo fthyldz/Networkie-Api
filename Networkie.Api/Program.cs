@@ -1,5 +1,6 @@
 using Carter;
 using Networkie.Api.IoC;
+using Networkie.Api.Middlewares;
 using Networkie.Application.IoC;
 using Networkie.Infrastructure.IoC;
 using Networkie.Persistence.IoC;
@@ -8,24 +9,32 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddApplication()
-    .AddPersistence()
-    .AddInfrastructure()
-    .AddApi();
+    .AddPersistence(builder.Configuration)
+    .AddInfrastructure(builder.Configuration)
+    .AddApi(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
+    //app.UseDeveloperExceptionPage();
     app.UseCors("DevelopmentCorsPolicy");
-    app.UseDeveloperExceptionPage();
 }
 else
 {
     app.UseCors("ProductionCorsPolicy");
 }
 
-app.UseExceptionHandler();
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.MapGroup("/api").MapCarter();
+app.UseMiddleware<IsEmailVerifiedMiddleware>();
+app.UseMiddleware<IsProfileCompletedMiddleware>();
+
+app.MapGroup("/api").RequireAuthorization().MapCarter();
+
+await app.Services.MigrateDatabaseAsync();
 
 app.Run();

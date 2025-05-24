@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Networkie.Entities\Networkie.Entities.csproj" />
+    </ItemGroup>
+
 </Project>

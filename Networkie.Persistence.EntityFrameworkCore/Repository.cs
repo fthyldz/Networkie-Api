@@ -7,25 +7,27 @@ namespace Networkie.Persistence.EntityFrameworkCore;
 
 public class Repository<TEntity>(IEfCoreDbContext context) : IRepository<TEntity> where TEntity : class
 {
-    private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
+    protected IEfCoreDbContext Context => context;
+    protected readonly DbSet<TEntity> Table = context.Set<TEntity>();
+    protected IQueryable<TEntity> TableAsNoTracking => Table.AsNoTracking();
 
-    public async Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default) =>
-        await _dbSet.FindAsync([id], cancellationToken);
+    public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+        await Table.FindAsync([id], cancellationToken);
 
     public async Task<TEntity?> FindBySearchAsync(Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default) =>
-        await _dbSet.FirstOrDefaultAsync(predicate, cancellationToken);
+        await Table.FirstOrDefaultAsync(predicate, cancellationToken);
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        await _dbSet.ToListAsync(cancellationToken);
+        await Table.ToListAsync(cancellationToken);
 
     public async Task<IEnumerable<TEntity>> FindAllBySearchAsync(Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default) =>
-        await _dbSet.Where(predicate).ToListAsync(cancellationToken);
+        await Table.Where(predicate).ToListAsync(cancellationToken);
 
     public async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default) =>
-        await _dbSet.AddAsync(entity, cancellationToken);
+        await Table.AddAsync(entity, cancellationToken);
 
-    public void Update(TEntity entity) => _dbSet.Update(entity);
-    public void Delete(TEntity entity) => _dbSet.Remove(entity);
+    public void Update(TEntity entity) => Table.Update(entity);
+    public void Delete(TEntity entity) => Table.Remove(entity);
 }

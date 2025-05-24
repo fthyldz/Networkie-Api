@@ -6,5 +6,6 @@ public class UserSocialPlatform : IBaseEntity
 {
     public Guid UserId { get; set; }
     public Guid SocialPlatformId { get; set; }
+    public virtual SocialPlatform SocialPlatform { get; set; }
     public string Url { get; set; }
 }

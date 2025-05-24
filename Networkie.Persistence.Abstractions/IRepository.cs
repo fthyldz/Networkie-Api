@@ -4,7 +4,7 @@ namespace Networkie.Persistence.Abstractions;
 
 public interface IRepository<TEntity> where TEntity : class
 {
-    Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<TEntity?> FindBySearchAsync(Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default);

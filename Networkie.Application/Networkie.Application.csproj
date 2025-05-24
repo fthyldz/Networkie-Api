@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Abstractions\Services\" />
+      <ProjectReference Include="..\Networkie.Persistence.Abstractions\Networkie.Persistence.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

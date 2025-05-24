@@ -4,5 +4,6 @@ namespace Networkie.Application.Abstractions.Providers;
 
 public interface ITokenProvider
 {
-    TokenDto GenerateTokenAsync(GenerateTokenDto generateTokenRequestDto, CancellationToken cancellationToken = default);
+    TokenDto GenerateToken(GenerateTokenDto generateTokenRequestDto);
+    RefreshTokenDto GenerateRefreshToken();
 }

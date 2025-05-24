@@ -1,11 +1,15 @@
+using System.Text;
 using Carter;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Networkie.Api.ExceptionHandlers;
+using Networkie.Application.Common.Exceptions;
 
 namespace Networkie.Api.IoC;
 
 public static class DependencyRegistrar
 {
-    public static IServiceCollection AddApi(this IServiceCollection services)
+    public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddCors(opts =>
         {
@@ -18,11 +22,35 @@ public static class DependencyRegistrar
     
             opts.AddPolicy("ProductionCorsPolicy", policy =>
             {
-                policy.WithOrigins("https://*.com", "http://*.com");
+                policy.AllowCredentials();
+                policy.WithOrigins("https://networkie.fthyldz.site", "http://localhost:4200");
                 policy.AllowAnyHeader();
                 policy.AllowAnyMethod();
             });
         });
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+            JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("JWT:Secret")!)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                /*options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = _ => throw new UnauthorizedException("Unauthorized access"),
+                    OnChallenge = _ => throw new UnauthorizedException("Unauthorized access")
+                };*/
+            });
+
+        services.AddAuthorization();
         
         services.AddCarter();
         
@@ -30,6 +58,8 @@ public static class DependencyRegistrar
         services.AddExceptionHandler<NotFoundExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
+
+        services.AddMemoryCache();
         
         return services;
     }

@@ -1,3 +1,3 @@
 namespace Networkie.Application.Dtos.TokenProviderDtos;
 
-public record GenerateTokenDto(string UserId, string Email, string PhoneNumber);
+public record GenerateTokenDto(Guid UserId, string Email, string[] Roles, bool IsEmailVerified, bool IsProfileCompleted);
