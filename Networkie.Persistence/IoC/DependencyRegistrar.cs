@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Networkie.Entities;
+using Networkie.Entities.Enums;
 using Networkie.Persistence.Contexts;
 using Networkie.Persistence.EntityFrameworkCore.Contexts;
 using Networkie.Persistence.EntityFrameworkCore.IoC;
@@ -81,6 +82,16 @@ public static class DependencyRegistrar
             await dbContext.AddRangeAsync(GetDepartments());
             isChanged = true;
         }
+        if (!await dbContext.Users.AnyAsync())
+        {
+            await dbContext.AddRangeAsync(GetUsers());
+            isChanged = true;
+        }
+        if (!await dbContext.UserRoles.AnyAsync())
+        {
+            await dbContext.AddRangeAsync(GetUserRoles());
+            isChanged = true;
+        }
         if (isChanged)
             await dbContext.SaveChangesAsync();
     }
@@ -89,11 +100,13 @@ public static class DependencyRegistrar
     [
         new()
         {
+            Id = new Guid("80a45b88-e8fc-4d29-85da-a2e4222952ba"),
             Name = "Admin"
         },
 
         new()
         {
+            Id = new Guid("efeece2e-3e89-4c7b-b25c-a428898904a5"),
             Name = "User"
         }
     ];
@@ -167,6 +180,29 @@ public static class DependencyRegistrar
         new()
         {
             Name = "Yazılım Mühendisliği"
+        }
+    ];
+    
+    private static List<User> GetUsers() =>
+    [
+        new()
+        {
+            Id = new Guid("ccf64c80-2d62-420e-be0c-e21f45b0d529"),
+            FirstName = "Admin",
+            Email = "admin@admin.com",
+            PasswordHashed = "$2a$11$do0kpdsQTD9g.UWcQsAdae2qw8whnmt2yYfYV5wh/WJ9gQdFne/Ky",
+            PasswordSalt = "$2a$11$do0kpdsQTD9g.UWcQsAdae",
+            IsEmailVerified = true,
+            IsProfileCompleted = true
+        }
+    ];
+    
+    private static List<UserRole> GetUserRoles() =>
+    [
+        new()
+        {
+            UserId = new Guid("ccf64c80-2d62-420e-be0c-e21f45b0d529"),
+            RoleId = new Guid("80a45b88-e8fc-4d29-85da-a2e4222952ba")
         }
     ];
 }

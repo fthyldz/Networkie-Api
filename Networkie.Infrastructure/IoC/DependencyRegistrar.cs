@@ -13,7 +13,7 @@ public static class DependencyRegistrar
     {
         services.AddScoped<ICryptoProvider, CryptoProvider>();
         services.AddScoped<ITokenProvider, TokenProvider>();
-        services.AddSingleton<IEmailService>(new BrevoEmailService(configuration["Brevo:ApiKey"]!));
+        services.AddSingleton<IEmailService, GmailEmailService>();
         
         return services;
     }

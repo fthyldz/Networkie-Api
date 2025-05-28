@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Carter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,7 +41,8 @@ public static class DependencyRegistrar
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
+                    RoleClaimType = ClaimTypes.Role
                 };
 
                 /*options.Events = new JwtBearerEvents
@@ -50,7 +52,10 @@ public static class DependencyRegistrar
                 };*/
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+        });
         
         services.AddCarter();
         

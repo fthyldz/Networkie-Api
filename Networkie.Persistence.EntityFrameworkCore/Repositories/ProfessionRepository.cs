@@ -13,4 +13,8 @@ public class ProfessionRepository(IEfCoreDbContext context) : Repository<Profess
     public async Task<IEnumerable<Profession>> GetByContainsNameAsync(string name,
         CancellationToken cancellationToken = default) =>
         await TableAsNoTracking.Where(p => p.Name.ToLower().Contains(name.ToLower())).ToListAsync(cancellationToken);
+
+    public async Task<IEnumerable<Profession>> GetProfessionsAsPagedForAdmin(int pageIndex = 0, int pageSize = 25, string? search = null, CancellationToken cancellationToken = default) => await TableAsNoTracking.Where(u => string.IsNullOrWhiteSpace(search) || u.Name.ToLower().Contains(search.ToLower())).Skip(pageIndex * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+
+    public async Task<long> GetProfessionsAsPagedTotalCountForAdmin(string? search = null, CancellationToken cancellationToken = default) => await TableAsNoTracking.Where(u => string.IsNullOrWhiteSpace(search) || u.Name.ToLower().Contains(search.ToLower())).CountAsync(cancellationToken);
 }

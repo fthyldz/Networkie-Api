@@ -59,7 +59,7 @@ public class LoginQueryHandler(
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var result = new LoginQueryResult(tokenResult.Token, refreshTokenResult.RefreshToken);
+        var result = new LoginQueryResult(tokenResult.Token, refreshTokenResult.RefreshToken, user.UserRoles.Select(ur => ur.Role.Name).OrderBy(x => x).FirstOrDefault() == "Admin");
 
         return SuccessResult<LoginQueryResult>.Create(result);
     }

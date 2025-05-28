@@ -24,7 +24,7 @@ public class RefreshTokenCommandHandler(
         if (userToken == null)
             throw new UnauthorizedException("Invalid email or password.");
 
-        var user = await userRepository.GetByIdAsync(userToken.UserId, cancellationToken);
+        var user = await userRepository.GetByIdWithRolesAsync(userToken.UserId, cancellationToken);
 
         if (user == null)
             throw new UnauthorizedException("Invalid email or password.");

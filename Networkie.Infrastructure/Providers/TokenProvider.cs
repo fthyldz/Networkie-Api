@@ -29,7 +29,7 @@ public class TokenProvider(IConfiguration configuration, ICryptoProvider cryptoP
             [
                 new Claim(ClaimTypes.UserData, encryptedPayload),
                 new Claim(ClaimTypes.NameIdentifier, generateTokenRequestDto.UserId.ToString()),
-                new Claim(ClaimTypes.Role, JsonSerializer.Serialize(generateTokenRequestDto.Roles)),
+                new Claim(ClaimTypes.Role, generateTokenRequestDto.Roles.OrderBy(x => x).FirstOrDefault()!),
                 new Claim(ClaimTypes.Anonymous, generateTokenRequestDto.IsProfileCompleted.ToString().ToLower()),
                 new Claim(ClaimTypes.Version, generateTokenRequestDto.IsEmailVerified.ToString().ToLower()),
             ],

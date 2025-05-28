@@ -28,4 +28,37 @@ public class CityRepository(IEfCoreDbContext context) : Repository<City>(context
     public async Task<IEnumerable<City>> GetByContainsNameAsync(string name,
         CancellationToken cancellationToken = default) =>
         await TableAsNoTracking.Where(c => c.Name.ToLower().Contains(name.ToLower())).ToListAsync(cancellationToken);
+
+    public async Task<IEnumerable<City>> GetCitiesAsPagedForAdmin(int pageIndex = 0, int pageSize = 25,
+        string? searchCity = null, List<Guid>? searchCountry = null, CancellationToken cancellationToken = default)
+    {
+        var query = TableAsNoTracking.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchCity))
+            query = query.Where(u => u.Name.ToLower().Contains(searchCity.ToLower()));
+
+        if (searchCountry != null && searchCountry.Any())
+            query = query.Where(u => searchCountry.Contains(u.CountryId));
+        else if (searchCountry != null && !searchCountry.Any())
+            return new List<City>();
+
+        return await query
+            .Skip(pageIndex * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<long> GetCitiesAsPagedTotalCountForAdmin(string? searchCity = null, List<Guid>? searchCountry = null, 
+        CancellationToken cancellationToken = default)
+    {
+        var query = TableAsNoTracking.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchCity))
+            query = query.Where(c => c.Name.ToLower().Contains(searchCity.ToLower()));
+
+        if (searchCountry != null && searchCountry.Any())
+            query = query.Where(u => searchCountry.Contains(u.CountryId));
+
+        return await query.CountAsync(cancellationToken);
+    }
 }

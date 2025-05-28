@@ -6,6 +6,7 @@ namespace Networkie.Persistence.Abstractions.Repositories;
 
 public interface IUserRepository : IRepository<User>
 {
+    Task<User?> GetByIdWithRolesAsync(Guid id, CancellationToken cancellationToken = default);
     Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<User>> GetUsersAsPaged(int pageIndex = 0, int pageSize = 25, ListDataFilterDto? filter = null,
@@ -50,4 +51,10 @@ public interface IUserRepository : IRepository<User>
     Task<User?> GetByIdWithDetailAsync(Guid userId, CancellationToken cancellationToken = default);
 
     Task<User?> GetByIdWithDetailToUpdateAsync(Guid userId, CancellationToken cancellationToken = default);
+    
+    Task<IEnumerable<User>> GetUsersAsPagedForAdmin(int pageIndex = 0, int pageSize = 25, UsersDataFilterDto? filter = null,
+        CancellationToken cancellationToken = default);
+
+    Task<long> GetUsersAsPagedTotalCountForAdmin(UsersDataFilterDto? filter = null,
+        CancellationToken cancellationToken = default);
 }

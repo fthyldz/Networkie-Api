@@ -13,4 +13,8 @@ public class UniversityRepository(IEfCoreDbContext context) : Repository<Univers
     public async Task<IEnumerable<University>> GetByContainsNameAsync(string name,
         CancellationToken cancellationToken = default) =>
         await TableAsNoTracking.Where(u => u.Name.ToLower().Contains(name.ToLower())).ToListAsync(cancellationToken);
+
+    public async Task<IEnumerable<University>> GetUniversitiesAsPagedForAdmin(int pageIndex = 0, int pageSize = 25, string? search = null, CancellationToken cancellationToken = default) => await TableAsNoTracking.Where(u => string.IsNullOrWhiteSpace(search) || u.Name.ToLower().Contains(search.ToLower())).Skip(pageIndex * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+
+    public async Task<long> GetUniversitiesAsPagedTotalCountForAdmin(string? search = null, CancellationToken cancellationToken = default) => await TableAsNoTracking.Where(u => string.IsNullOrWhiteSpace(search) || u.Name.ToLower().Contains(search.ToLower())).CountAsync(cancellationToken);
 }

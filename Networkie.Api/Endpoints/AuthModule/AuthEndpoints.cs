@@ -9,7 +9,6 @@ using Networkie.Application.Features.Auth.Commands.ResendEmailVerificationCode;
 using Networkie.Application.Features.Auth.Commands.VerifyEmail;
 using Networkie.Application.Features.Auth.Queries.Login;
 using Networkie.Application.Features.Auth.Queries.ProfileCompleted;
-using Networkie.Entities.Enums;
 
 namespace Networkie.Api.Endpoints.AuthModule;
 

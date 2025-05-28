@@ -11,8 +11,11 @@ namespace Networkie.Persistence.EntityFrameworkCore.Repositories;
 
 public class UserRepository(IEfCoreDbContext context) : Repository<User>(context), IUserRepository
 {
+    public async Task<User?> GetByIdWithRolesAsync(Guid id, CancellationToken cancellationToken = default)
+        => await TableAsNoTracking.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+    
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
-        => await TableAsNoTracking.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+        => await TableAsNoTracking.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
 
     private Expression<Func<User, bool>> GenerateChartDataFilter(ChartDataFilterDto? filter = null)
     {
@@ -344,4 +347,51 @@ public class UserRepository(IEfCoreDbContext context) : Repository<User>(context
             .Include(u => u.UserSocialPlatforms)
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
     }
+    
+    public async Task<IEnumerable<User>> GetUsersAsPagedForAdmin(int pageIndex = 0, int pageSize = 25,
+        UsersDataFilterDto? filter = null,
+        CancellationToken cancellationToken = default)
+        => await TableAsNoTracking
+            .Include(u => u.Profession)
+            .Include(u => u.Country)
+            .Include(u => u.State)
+            .Include(u => u.City)
+            .Include(u => u.District)
+            .Include(u => u.UserUniversities)
+            .ThenInclude(uu => uu.University)
+            .Include(u => u.UserUniversities)
+            .ThenInclude(uu => uu.Department)
+            .Where(u =>
+                filter == null || (string.IsNullOrWhiteSpace(filter.FirstName) ||
+                                   u.FirstName.ToLower().Contains(filter.FirstName.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.MiddleName) || !string.IsNullOrWhiteSpace(u.MiddleName) &&
+                    u.MiddleName.ToLower().Contains(filter.MiddleName.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.LastName) || !string.IsNullOrWhiteSpace(u.LastName) &&
+                    u.LastName.ToLower().Contains(filter.LastName.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.Email) || !string.IsNullOrWhiteSpace(u.Email) &&
+                    u.Email.ToLower().Contains(filter.Email.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.PhoneNumber) || !string.IsNullOrWhiteSpace(u.PhoneCountryCode) &&
+                    u.PhoneCountryCode.ToLower().Contains(filter.PhoneNumber.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.PhoneNumber) || !string.IsNullOrWhiteSpace(u.PhoneNumber) &&
+                    u.PhoneNumber.ToLower().Contains(filter.PhoneNumber.ToLower()))
+                ).Skip(pageIndex * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+
+    public async Task<long> GetUsersAsPagedTotalCountForAdmin(UsersDataFilterDto? filter = null,
+        CancellationToken cancellationToken = default)
+        => await TableAsNoTracking
+            .Include(u => u.UserUniversities)
+            .Where(u =>
+                filter == null || (string.IsNullOrWhiteSpace(filter.FirstName) ||
+                                   u.FirstName.ToLower().Contains(filter.FirstName.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.MiddleName) || !string.IsNullOrWhiteSpace(u.MiddleName) &&
+                    u.MiddleName.ToLower().Contains(filter.MiddleName.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.LastName) || !string.IsNullOrWhiteSpace(u.LastName) &&
+                    u.LastName.ToLower().Contains(filter.LastName.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.Email) || !string.IsNullOrWhiteSpace(u.Email) &&
+                    u.Email.ToLower().Contains(filter.Email.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.PhoneNumber) || !string.IsNullOrWhiteSpace(u.PhoneCountryCode) &&
+                    u.PhoneCountryCode.ToLower().Contains(filter.PhoneNumber.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.PhoneNumber) || !string.IsNullOrWhiteSpace(u.PhoneNumber) &&
+                    u.PhoneNumber.ToLower().Contains(filter.PhoneNumber.ToLower()))
+            ).CountAsync(cancellationToken);
 }
