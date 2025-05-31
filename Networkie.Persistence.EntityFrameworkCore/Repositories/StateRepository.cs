@@ -18,5 +18,5 @@ public class StateRepository(IEfCoreDbContext context) : Repository<State>(conte
 
     public async Task<IEnumerable<State>> GetByContainsNameAsync(string name,
         CancellationToken cancellationToken = default) =>
-        await TableAsNoTracking.Where(c => c.Name.ToLower().Contains(name.ToLower())).ToListAsync(cancellationToken);
+        await TableAsNoTracking.Where(c => EF.Functions.ILike(c.Name, $"%{name}%")).ToListAsync(cancellationToken);
 }

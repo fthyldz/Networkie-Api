@@ -80,11 +80,11 @@ public class UserRepository(IEfCoreDbContext context) : Repository<User>(context
             .ThenInclude(uu => uu.Department)
             .Where(u =>
                 filter == null || (string.IsNullOrWhiteSpace(filter.FirstName) ||
-                                   u.FirstName.ToLower().Contains(filter.FirstName.ToLower()))
+                                   EF.Functions.ILike(u.FirstName, $"%{filter.FirstName}%"))
                 && (string.IsNullOrWhiteSpace(filter.MiddleName) || !string.IsNullOrWhiteSpace(u.MiddleName) &&
-                    u.MiddleName.ToLower().Contains(filter.MiddleName.ToLower()))
+                    EF.Functions.ILike(u.MiddleName, $"%{filter.MiddleName}%"))
                 && (string.IsNullOrWhiteSpace(filter.LastName) || !string.IsNullOrWhiteSpace(u.LastName) &&
-                    u.LastName.ToLower().Contains(filter.LastName.ToLower()))
+                    EF.Functions.ILike(u.LastName, $"%{filter.LastName}%"))
                 && (filter.ProfessionIds == null ||
                     u.ProfessionId.HasValue && filter.ProfessionIds.Contains(u.ProfessionId.Value))
                 && (filter.CountryIds == null || u.CountryId.HasValue && filter.CountryIds.Contains(u.CountryId.Value))
@@ -135,11 +135,11 @@ public class UserRepository(IEfCoreDbContext context) : Repository<User>(context
             .Include(u => u.UserUniversities)
             .Where(u =>
                 filter == null || (string.IsNullOrWhiteSpace(filter.FirstName) ||
-                                   u.FirstName.ToLower().Contains(filter.FirstName.ToLower()))
+                                   EF.Functions.ILike(u.FirstName, $"%{filter.FirstName}%"))
                 && (string.IsNullOrWhiteSpace(filter.MiddleName) || !string.IsNullOrWhiteSpace(u.MiddleName) &&
-                    u.MiddleName.ToLower().Contains(filter.MiddleName.ToLower()))
+                    EF.Functions.ILike(u.MiddleName, $"%{filter.MiddleName}%"))
                 && (string.IsNullOrWhiteSpace(filter.LastName) || !string.IsNullOrWhiteSpace(u.LastName) &&
-                    u.LastName.ToLower().Contains(filter.LastName.ToLower()))
+                    EF.Functions.ILike(u.LastName, $"%{filter.LastName}%"))
                 && (filter.ProfessionIds == null ||
                     u.ProfessionId.HasValue && filter.ProfessionIds.Contains(u.ProfessionId.Value))
                 && (filter.CountryIds == null || u.CountryId.HasValue && filter.CountryIds.Contains(u.CountryId.Value))
@@ -365,19 +365,19 @@ public class UserRepository(IEfCoreDbContext context) : Repository<User>(context
             .ThenInclude(r => r.Role)
             .Where(u =>
                 filter == null || (string.IsNullOrWhiteSpace(filter.FirstName) ||
-                                   u.FirstName.ToLower().Contains(filter.FirstName.ToLower()))
+                                   EF.Functions.ILike(u.FirstName, $"%{filter.FirstName}%"))
                 && (string.IsNullOrWhiteSpace(filter.MiddleName) || !string.IsNullOrWhiteSpace(u.MiddleName) &&
-                    u.MiddleName.ToLower().Contains(filter.MiddleName.ToLower()))
+                    EF.Functions.ILike(u.MiddleName, $"%{filter.MiddleName}%"))
                 && (string.IsNullOrWhiteSpace(filter.LastName) || !string.IsNullOrWhiteSpace(u.LastName) &&
-                    u.LastName.ToLower().Contains(filter.LastName.ToLower()))
+                    EF.Functions.ILike(u.LastName, $"%{filter.LastName}%"))
                 && (string.IsNullOrWhiteSpace(filter.Email) || !string.IsNullOrWhiteSpace(u.Email) &&
-                    u.Email.ToLower().Contains(filter.Email.ToLower()))
+                    EF.Functions.ILike(u.Email, $"%{filter.Email}%"))
                 && (string.IsNullOrWhiteSpace(filter.PhoneNumber) || !string.IsNullOrWhiteSpace(u.PhoneCountryCode) &&
-                    u.PhoneCountryCode.ToLower().Contains(filter.PhoneNumber.ToLower()))
+                    EF.Functions.ILike(u.PhoneCountryCode, $"%{filter.PhoneNumber}%"))
                 && (string.IsNullOrWhiteSpace(filter.PhoneNumber) || !string.IsNullOrWhiteSpace(u.PhoneNumber) &&
-                    u.PhoneNumber.ToLower().Contains(filter.PhoneNumber.ToLower()))
+                    EF.Functions.ILike(u.PhoneNumber, $"%{filter.PhoneNumber}%"))
                 && (string.IsNullOrWhiteSpace(filter.Role) || 
-                    u.UserRoles.OrderBy(r => r.Role.Name).Select(r => r.Role.Name).FirstOrDefault()!.ToLower().Contains(filter.Role.ToLower()))
+                    EF.Functions.ILike(u.UserRoles.OrderBy(r => r.Role.Name).Select(r => r.Role.Name).FirstOrDefault()!, $"%{filter.Role}%"))
                 ).Skip(pageIndex * pageSize).Take(pageSize).ToListAsync(cancellationToken);
 
     public async Task<long> GetUsersAsPagedTotalCountForAdmin(UsersDataFilterDto? filter = null,
@@ -388,18 +388,18 @@ public class UserRepository(IEfCoreDbContext context) : Repository<User>(context
             .ThenInclude(r => r.Role)
             .Where(u =>
                 filter == null || (string.IsNullOrWhiteSpace(filter.FirstName) ||
-                                   u.FirstName.ToLower().Contains(filter.FirstName.ToLower()))
+                                   EF.Functions.ILike(u.FirstName, $"%{filter.FirstName}%"))
                 && (string.IsNullOrWhiteSpace(filter.MiddleName) || !string.IsNullOrWhiteSpace(u.MiddleName) &&
-                    u.MiddleName.ToLower().Contains(filter.MiddleName.ToLower()))
+                    EF.Functions.ILike(u.MiddleName, $"%{filter.MiddleName}%"))
                 && (string.IsNullOrWhiteSpace(filter.LastName) || !string.IsNullOrWhiteSpace(u.LastName) &&
-                    u.LastName.ToLower().Contains(filter.LastName.ToLower()))
+                    EF.Functions.ILike(u.LastName, $"%{filter.LastName}%"))
                 && (string.IsNullOrWhiteSpace(filter.Email) || !string.IsNullOrWhiteSpace(u.Email) &&
-                    u.Email.ToLower().Contains(filter.Email.ToLower()))
+                    EF.Functions.ILike(u.Email, $"%{filter.Email}%"))
                 && (string.IsNullOrWhiteSpace(filter.PhoneNumber) || !string.IsNullOrWhiteSpace(u.PhoneCountryCode) &&
-                    u.PhoneCountryCode.ToLower().Contains(filter.PhoneNumber.ToLower()))
+                    EF.Functions.ILike(u.PhoneCountryCode, $"%{filter.PhoneNumber}%"))
                 && (string.IsNullOrWhiteSpace(filter.PhoneNumber) || !string.IsNullOrWhiteSpace(u.PhoneNumber) &&
-                    u.PhoneNumber.ToLower().Contains(filter.PhoneNumber.ToLower()))
+                    EF.Functions.ILike(u.PhoneNumber, $"%{filter.PhoneNumber}%"))
                 && (string.IsNullOrWhiteSpace(filter.Role) || 
-                    u.UserRoles.OrderBy(r => r.Role.Name).Select(r => r.Role.Name).FirstOrDefault()!.ToLower().Contains(filter.Role.ToLower()))
+                    EF.Functions.ILike(u.UserRoles.OrderBy(r => r.Role.Name).Select(r => r.Role.Name).FirstOrDefault()!, $"%{filter.Role}%"))
             ).CountAsync(cancellationToken);
 }

@@ -27,7 +27,7 @@ public class CityRepository(IEfCoreDbContext context) : Repository<City>(context
 
     public async Task<IEnumerable<City>> GetByContainsNameAsync(string name,
         CancellationToken cancellationToken = default) =>
-        await TableAsNoTracking.Where(c => c.Name.ToLower().Contains(name.ToLower())).ToListAsync(cancellationToken);
+        await TableAsNoTracking.Where(c => EF.Functions.ILike(c.Name, $"%{name}%")).ToListAsync(cancellationToken);
 
     public async Task<IEnumerable<City>> GetCitiesAsPagedForAdmin(int pageIndex = 0, int pageSize = 25,
         string? searchCity = null, List<Guid>? searchCountry = null, CancellationToken cancellationToken = default)
@@ -35,7 +35,7 @@ public class CityRepository(IEfCoreDbContext context) : Repository<City>(context
         var query = TableAsNoTracking.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchCity))
-            query = query.Where(u => u.Name.ToLower().Contains(searchCity.ToLower()));
+            query = query.Where(c => EF.Functions.ILike(c.Name, $"%{searchCity}%"));
 
         if (searchCountry != null && searchCountry.Any())
             query = query.Where(u => searchCountry.Contains(u.CountryId));
@@ -54,7 +54,7 @@ public class CityRepository(IEfCoreDbContext context) : Repository<City>(context
         var query = TableAsNoTracking.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchCity))
-            query = query.Where(c => c.Name.ToLower().Contains(searchCity.ToLower()));
+            query = query.Where(c => EF.Functions.ILike(c.Name, $"%{searchCity}%"));
 
         if (searchCountry != null && searchCountry.Any())
             query = query.Where(u => searchCountry.Contains(u.CountryId));

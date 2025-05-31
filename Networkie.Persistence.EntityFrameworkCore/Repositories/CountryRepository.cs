@@ -12,9 +12,9 @@ public class CountrytRepository(IEfCoreDbContext context) : Repository<Country>(
 
     public async Task<IEnumerable<Country>> GetByContainsNameAsync(string name,
         CancellationToken cancellationToken = default) =>
-        await TableAsNoTracking.Where(c => c.Name.ToLower().Contains(name.ToLower())).ToListAsync(cancellationToken);
+        await TableAsNoTracking.Where(c => EF.Functions.ILike(c.Name, $"%{name}%")).ToListAsync(cancellationToken);
     
-    public async Task<IEnumerable<Country>> GetCountriesAsPagedForAdmin(int pageIndex = 0, int pageSize = 25, string? search = null, CancellationToken cancellationToken = default) => await TableAsNoTracking.Where(u => string.IsNullOrWhiteSpace(search) || u.Name.ToLower().Contains(search.ToLower())).Skip(pageIndex * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+    public async Task<IEnumerable<Country>> GetCountriesAsPagedForAdmin(int pageIndex = 0, int pageSize = 25, string? search = null, CancellationToken cancellationToken = default) => await TableAsNoTracking.Where(u => string.IsNullOrWhiteSpace(search) || EF.Functions.ILike(u.Name, $"%{search}%")).Skip(pageIndex * pageSize).Take(pageSize).ToListAsync(cancellationToken);
 
-    public async Task<long> GetCountriesAsPagedTotalCountForAdmin(string? search = null, CancellationToken cancellationToken = default) => await TableAsNoTracking.Where(u => string.IsNullOrWhiteSpace(search) || u.Name.ToLower().Contains(search.ToLower())).CountAsync(cancellationToken);
+    public async Task<long> GetCountriesAsPagedTotalCountForAdmin(string? search = null, CancellationToken cancellationToken = default) => await TableAsNoTracking.Where(u => string.IsNullOrWhiteSpace(search) || EF.Functions.ILike(u.Name, $"%{search}%")).CountAsync(cancellationToken);
 }
