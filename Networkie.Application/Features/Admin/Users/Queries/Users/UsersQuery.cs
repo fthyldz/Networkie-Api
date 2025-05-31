@@ -8,7 +8,8 @@ public record UsersQuery(int PageIndex = 0, int PageSize = 25,
     string? MiddleName = null,
     string? LastName = null,
     string? Email = null,
-    string? PhoneNumber = null) : IQuery<IResult<UsersQueryResult>>;
+    string? PhoneNumber = null,
+    string? Role = null) : IQuery<IResult<UsersQueryResult>>;
 
 public record UsersQueryResult(IEnumerable<UsersQueryDataResult> Data, long TotalCount);
 
@@ -18,4 +19,5 @@ public record UsersQueryDataResult(
     string Email,
     string? MiddleName = null,
     string? LastName = null,
-    string? PhoneNumber = null);
+    string? PhoneNumber = null,
+    string? Role = null);

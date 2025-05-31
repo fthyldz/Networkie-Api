@@ -18,6 +18,7 @@ using Networkie.Application.Features.Admin.SocialPlatforms.Queries.SocialPlatfor
 using Networkie.Application.Features.Admin.Universities.Commands.DeleteUniversity;
 using Networkie.Application.Features.Admin.Universities.Commands.UpsertUniversity;
 using Networkie.Application.Features.Admin.Universities.Queries.Universities;
+using Networkie.Application.Features.Admin.Users.Commands.CreateUser;
 using Networkie.Application.Features.Admin.Users.Commands.DeleteUser;
 using Networkie.Application.Features.Admin.Users.Queries.Users;
 using Networkie.Application.Features.Profile.Commands.UpdateProfile;
@@ -40,7 +41,8 @@ public class AdminEndpoints : CarterModule
                 request.MiddleName,
                 request.LastName,
                 request.Email,
-                request.PhoneNumber);
+                request.PhoneNumber,
+                request.Role);
             var response = await mediator.Send(query, cancellationToken);
             return Results.Ok(response);
         });
@@ -88,6 +90,15 @@ public class AdminEndpoints : CarterModule
             var response = await mediator.Send(query, cancellationToken);
             return Results.Ok(response);
         });
+        
+        userGroup.MapPost("/",
+            async ([FromBody] InsertUserDto request, IMediator mediator, CancellationToken cancellationToken = default) =>
+            {
+                var command = new CreateUserCommand(request.Email, request.FirstName, request.MiddleName,
+                    request.LastName, request.Password, request.Role);
+                var response = await mediator.Send(command, cancellationToken);
+                return Results.Ok(response);
+            });
         
         var universityGroup = routeGroup.MapGroup("/universities").WithTags("Universities");
 

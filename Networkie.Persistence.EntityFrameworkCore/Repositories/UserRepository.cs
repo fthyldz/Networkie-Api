@@ -361,6 +361,8 @@ public class UserRepository(IEfCoreDbContext context) : Repository<User>(context
             .ThenInclude(uu => uu.University)
             .Include(u => u.UserUniversities)
             .ThenInclude(uu => uu.Department)
+            .Include(ur => ur.UserRoles)
+            .ThenInclude(r => r.Role)
             .Where(u =>
                 filter == null || (string.IsNullOrWhiteSpace(filter.FirstName) ||
                                    u.FirstName.ToLower().Contains(filter.FirstName.ToLower()))
@@ -374,12 +376,16 @@ public class UserRepository(IEfCoreDbContext context) : Repository<User>(context
                     u.PhoneCountryCode.ToLower().Contains(filter.PhoneNumber.ToLower()))
                 && (string.IsNullOrWhiteSpace(filter.PhoneNumber) || !string.IsNullOrWhiteSpace(u.PhoneNumber) &&
                     u.PhoneNumber.ToLower().Contains(filter.PhoneNumber.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.Role) || 
+                    u.UserRoles.OrderBy(r => r.Role.Name).Select(r => r.Role.Name).FirstOrDefault()!.ToLower().Contains(filter.Role.ToLower()))
                 ).Skip(pageIndex * pageSize).Take(pageSize).ToListAsync(cancellationToken);
 
     public async Task<long> GetUsersAsPagedTotalCountForAdmin(UsersDataFilterDto? filter = null,
         CancellationToken cancellationToken = default)
         => await TableAsNoTracking
             .Include(u => u.UserUniversities)
+            .Include(ur => ur.UserRoles)
+            .ThenInclude(r => r.Role)
             .Where(u =>
                 filter == null || (string.IsNullOrWhiteSpace(filter.FirstName) ||
                                    u.FirstName.ToLower().Contains(filter.FirstName.ToLower()))
@@ -393,5 +399,7 @@ public class UserRepository(IEfCoreDbContext context) : Repository<User>(context
                     u.PhoneCountryCode.ToLower().Contains(filter.PhoneNumber.ToLower()))
                 && (string.IsNullOrWhiteSpace(filter.PhoneNumber) || !string.IsNullOrWhiteSpace(u.PhoneNumber) &&
                     u.PhoneNumber.ToLower().Contains(filter.PhoneNumber.ToLower()))
+                && (string.IsNullOrWhiteSpace(filter.Role) || 
+                    u.UserRoles.OrderBy(r => r.Role.Name).Select(r => r.Role.Name).FirstOrDefault()!.ToLower().Contains(filter.Role.ToLower()))
             ).CountAsync(cancellationToken);
 }

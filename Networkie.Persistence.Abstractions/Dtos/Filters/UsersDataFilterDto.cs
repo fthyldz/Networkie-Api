@@ -5,4 +5,5 @@ public record UsersDataFilterDto(
     string? MiddleName = null,
     string? LastName = null,
     string? Email = null,
-    string? PhoneNumber = null);
+    string? PhoneNumber = null,
+    string? Role = null);

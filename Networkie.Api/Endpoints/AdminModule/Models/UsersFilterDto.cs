@@ -8,7 +8,8 @@ public record UsersFilterDto(int PageIndex = 0, int PageSize = 25,
     string? MiddleName = null,
     string? LastName = null,
     string? Email = null,
-    string? PhoneNumber = null);
+    string? PhoneNumber = null,
+    string? Role = null);
 
 public class UsersFilterDtoValidator : AbstractValidator<UsersFilterDto>
 {

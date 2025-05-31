@@ -13,7 +13,7 @@ public class UsersQueryHandler(
     public async Task<IResult<UsersQueryResult>> Handle(UsersQuery query, CancellationToken cancellationToken)
     {
         var filter = new UsersDataFilterDto(query.FirstName, query.MiddleName, query.LastName, query.Email,
-            query.PhoneNumber);
+            query.PhoneNumber, query.Role);
         var users = await userRepository.GetUsersAsPagedForAdmin(query.PageIndex, query.PageSize, filter,
             cancellationToken);
         var usersCount = await userRepository.GetUsersAsPagedTotalCountForAdmin(filter, cancellationToken);
@@ -24,7 +24,8 @@ public class UsersQueryHandler(
             u.Email,
             u.MiddleName,
             u.LastName,
-            string.IsNullOrWhiteSpace(u.PhoneCountryCode) ? null : u.PhoneCountryCode + " " + u.PhoneNumber));
+            string.IsNullOrWhiteSpace(u.PhoneCountryCode) ? null : u.PhoneCountryCode + " " + u.PhoneNumber,
+            u.UserRoles.OrderBy(r => r.Role.Name).Select(r => r.Role.Name).FirstOrDefault()));
 
         var result = new UsersQueryResult(data, usersCount);
 
