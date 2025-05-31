@@ -21,11 +21,11 @@ public class UserRepository(IEfCoreDbContext context) : Repository<User>(context
     {
         Expression<Func<User, bool>> filterFunc = u =>
             filter == null || (string.IsNullOrWhiteSpace(filter.FirstName) ||
-                               u.FirstName.ToLower().Contains(filter.FirstName.ToLower()))
+                               EF.Functions.ILike(u.FirstName, $"%{filter.FirstName}%"))
             && (string.IsNullOrWhiteSpace(filter.MiddleName) || !string.IsNullOrWhiteSpace(u.MiddleName) &&
-                u.MiddleName.ToLower().Contains(filter.MiddleName.ToLower()))
+                EF.Functions.ILike(u.MiddleName, $"%{filter.MiddleName}%"))
             && (string.IsNullOrWhiteSpace(filter.LastName) || !string.IsNullOrWhiteSpace(u.LastName) &&
-                u.LastName.ToLower().Contains(filter.LastName.ToLower()))
+                EF.Functions.ILike(u.LastName, $"%{filter.LastName}%"))
             && (filter.ProfessionIds == null ||
                 u.ProfessionId.HasValue && filter.ProfessionIds.Contains(u.ProfessionId.Value))
             && (filter.CountryIds == null || u.CountryId.HasValue && filter.CountryIds.Contains(u.CountryId.Value))
@@ -45,11 +45,11 @@ public class UserRepository(IEfCoreDbContext context) : Repository<User>(context
     {
         Expression<Func<User, bool>> filterFunc = u =>
             filter == null || (string.IsNullOrWhiteSpace(filter.FirstName) ||
-                               u.FirstName.ToLower().Contains(filter.FirstName.ToLower()))
+                               EF.Functions.ILike(u.FirstName, $"%{filter.FirstName}%"))
             && (string.IsNullOrWhiteSpace(filter.MiddleName) || !string.IsNullOrWhiteSpace(u.MiddleName) &&
-                u.MiddleName.ToLower().Contains(filter.MiddleName.ToLower()))
+                EF.Functions.ILike(u.MiddleName, $"%{filter.MiddleName}%"))
             && (string.IsNullOrWhiteSpace(filter.LastName) || !string.IsNullOrWhiteSpace(u.LastName) &&
-                u.LastName.ToLower().Contains(filter.LastName.ToLower()))
+                EF.Functions.ILike(u.LastName, $"%{filter.LastName}%"))
             && (filter.ProfessionIds == null ||
                 u.ProfessionId.HasValue && filter.ProfessionIds.Contains(u.ProfessionId.Value))
             && (filter.CountryIds == null || u.CountryId.HasValue && filter.CountryIds.Contains(u.CountryId.Value))
